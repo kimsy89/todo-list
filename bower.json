@@ -1,0 +1,19 @@
+{
+  "name": "todo-list",
+  "description": "TODO list app for TDD",
+  "authors": [
+    "SOYOUNG"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.2.1"
+  }
+}
