@@ -1,4 +1,13 @@
-function test () {
-  console.log('test.js');
+'use strict'
+
+class User {
+  constructor(name) {
+    this._name = name;
+  }
+
+  say() {
+    return 'My name is ' + this._name;
+  }
 }
-test();
+
+module.exports = { User };

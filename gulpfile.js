@@ -1,16 +1,17 @@
-var gulp = require('gulp');
-var clean = require('gulp-clean');
-var plumber = require('gulp-plumber'); //에러 핸들링
-var browserSync = require('browser-sync').create();
-var inject = require('gulp-inject');
-var copy = require('gulp-copy');
+const gulp = require('gulp');
+const clean = require('gulp-clean');
+const jasmine = require('gulp-jasmine');
+const plumber = require('gulp-plumber'); //에러 핸들링
+const browserSync = require('browser-sync').create();
+const inject = require('gulp-inject');
+const copy = require('gulp-copy');
 
-var sass = require('gulp-sass');
-var cssmin = require('gulp-cssmin');
+const sass = require('gulp-sass');
+const cssmin = require('gulp-cssmin');
 
-var wiredep = require('wiredep').stream;
-var uglify = require('gulp-uglify');
-var concat = require('gulp-concat');
+const wiredep = require('wiredep').stream;
+const uglify = require('gulp-uglify');
+const concat = require('gulp-concat');
 
 /* *************
  * compile
@@ -61,7 +62,7 @@ gulp.task('copy-html', function() {
 /* *************
  * Inject
  ************* */
-var injectSources = gulp.src(['dist/styles/app.css', 'dist/scripts/app.js'], {read: false});
+const injectSources = gulp.src(['dist/styles/app.css', 'dist/scripts/app.js'], {read: false});
 
 gulp.task('inject-dev', ['bower-dev', 'sass', 'concat'], function() {
   return gulp.src('index.html')
@@ -107,6 +108,11 @@ gulp.task('sass-watch', ['sass'], function(done) {
  * TASK
  ************* */
 gulp.task('default', ['sass']);
+
+gulp.task('test', function() {
+  return gulp.src('spec/text.spec.js')
+  .pipe(jasmine());
+})
 
 gulp.task('watch', function() {
   gulp.watch('styles/sass/*.scss', ['sass']);
