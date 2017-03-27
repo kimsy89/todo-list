@@ -1,13 +1,13 @@
-'use strict'
+// 'use strict'
 
-class User {
-  constructor(name) {
-    this._name = name;
-  }
+// class User {
+//   constructor(name) {
+//     this._name = name;
+//   }
 
-  say() {
-    return 'My name is ' + this._name;
-  }
-}
+//   say() {
+//     return 'My name is ' + this._name;
+//   }
+// }
 
-module.exports = { User };
+// module.exports = { User };
