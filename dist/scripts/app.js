@@ -32,6 +32,11 @@ var taskListController = {
     this.refresh();
   },
 
+  change: function(taskIndex, isChecked) {
+    this.list[taskIndex].isChecked = isChecked;
+    this.refresh();
+  },
+
   refresh: function() {
     if (! Array.isArray(this.list)) {
       alert('ERROR.WRONG_ARRAY');
@@ -39,6 +44,14 @@ var taskListController = {
     }
 
     window.localStorage.setItem('todo', JSON.stringify(this.list));
+  },
+
+  findIndex: function(taskId) {
+    return this.list.findIndex(function(item, index) {
+      console.log('item id: ', item.id)
+      console.log('task id: ', taskId)
+      return item.id === taskId;
+    });
   }
 }
 
@@ -64,7 +77,7 @@ var dataController = {
   },
 
   remove: function(taskId) {
-    var taskIndex = this.findIndex(taskId);
+    var taskIndex = taskListController.findIndex(taskId);
     if (taskIndex < 0) {
       alert('ERROR.NOT_FOUND_REMOVE_OBJECT');
       return false;
@@ -81,14 +94,34 @@ var dataController = {
       alert('ERROR.FAIL_TO_REMOVE_OBJECT');
       return false;
     }
-  }, 
+  },
 
-  findIndex: function(taskId) {
-    return this.list.findIndex(function(item, index) {
-      console.log('item id: ', item.id)
-      console.log('task id: ', taskId)
-      return item.id === taskId;
-    });
+  change: function(taskId, isChecked) {
+    var taskIndex = taskListController.findIndex(taskId);
+    if (taskIndex < 0) {
+      alert('ERROR.NOT_FOUND_MODIFY_OBJECT');
+      return false;
+    }
+
+    taskListController.change(taskIndex, isChecked)
+    //clonedList = null;
+    elemController.change(taskId, isChecked);
+
+    // var clonedList = taskListController.list.slice(0);
+    // debugger;
+    // clonedList[taskIndex].isChecked = isChecked;
+
+    // console.log('clonedList[taskIndex].isChecked: ', clonedList[taskIndex].isChecked);
+    // debugger;
+    // console.log('taskListController.list[taskIndex].isChecked: ', taskListController.list[taskIndex].isChecked)
+    // if (clonedList[taskIndex].isChecked !== taskListController.list[taskIndex].isChecked) {
+    //   taskListController.change(taskIndex, isChecked)
+    //   clonedList = null;
+    //   elemController.change(taskId, isChecked);
+    // } else {
+    //   alert('ERROR.FAIL_TO_CHANGE_OBJECT');
+    //   return false;
+    // }
   }
 };
 
@@ -96,7 +129,7 @@ var elemController = {
   add: function(taskObj) {
     var $btnInNewTask = $(`<button type="button" class="delete">delete task</button>`)
       , $checkboxInNewTask = $(`<input type="checkbox" name="" class="checkbox"/>`)
-      , $newTask = $(`<li>${taskObj.title}</li>`);
+      , $newTask = $(`<li class="task">${taskObj.title}</li>`);
 
     $checkboxInNewTask.prop('checked', taskObj.isChecked);
     $newTask.attr('id', taskObj.id)
@@ -114,6 +147,15 @@ var elemController = {
     }
 
     $removeTask.remove();
+  },
+
+  change: function(taskId, isChecked) {
+    var $changeTask = $(`#${taskId}`);
+    if ($changeTask.length <= 0) {
+      alert('ERROR_NOT_FOUND_CHANGE_ELEMENT');
+      return false;
+    }
+    $changeTask[(isChecked) ? 'fadeOut' : 'fadeIn']();
   }
 };
 
@@ -143,6 +185,39 @@ $('#task-list').on('click', '.delete', function(event) {
   dataController.remove($task.attr('id'));
 });
 
+$('#task-list').on('change', '.checkbox', function(event) {
+  event.preventDefault();
+  var $this = $(this)
+    , $task = $this.parents('li');
+
+  dataController.change($task.attr('id'), $this.prop('checked'));
+});
+
+$('#show-all').on('click', function(event) {
+  event.preventDefault();
+  $('.task').each(function(index, item) {
+    $(item).fadeIn();
+  });
+});
+
+$('#show-ing').on('click', function(event) {
+  event.preventDefault();
+  $('.task').each(function(index, item) {
+    var $task = $(item)
+      , isChecked = $task.find('.checkbox').prop('checked');
+    $task[(isChecked) ? 'fadeOut' : 'fadeIn']();
+  });
+});
+
+$('#show-done').on('click', function(event) {
+  event.preventDefault();
+  $('.task').each(function(index, item) {
+    var $task = $(item)
+      , isChecked = $task.find('.checkbox').prop('checked');
+    $task[(isChecked) ? 'fadeIn' : 'fadeOut']();
+  });
+});
+
 var localStorageList = window.localStorage.getItem('todo');
 if (typeof localStorageList !== 'undefined' && localStorageList !== null) {
   var parsed = JSON.parse(localStorageList);
@@ -150,6 +225,8 @@ if (typeof localStorageList !== 'undefined' && localStorageList !== null) {
   for (var i = 0, j = parsed.length; i < j; i++) {
     dataController.add(parsed[i]);
   }
+
+  $('#show-ing').click();
 } 
 
 // 'use strict'
